@@ -40,13 +40,12 @@ This project is designed to simulate a modern frontend development environment w
 
 ### Prerequisites
 
-- **Node.js** (v24.0.0 or higher, within the Node 24 LTS line) with npm
-  - Optional: use `nvm` for Node.js version management (not required)
+- **Node.js 24+** with npm — run `nvm install` (uses `.nvmrc`) or install from [nodejs.org](https://nodejs.org)
 
 Check your Node version:
 
 ```bash
-node -v  # should be v24.x
+node -v  # should be v24.x or higher
 ```
 
 ### Installation

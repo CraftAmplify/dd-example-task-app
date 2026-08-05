@@ -110,5 +110,8 @@ cypress/downloads/
 *.sqlite
 *.sqlite3
 
+# Mock database (generated from db-backup.json)
+db.json
+
 # Misc
 =

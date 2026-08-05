@@ -2,8 +2,6 @@
 
 describe('Task List Application', () => {
   beforeEach(() => {
-    cy.wait(2000)
-
     cy.visit('/', { timeout: 30000 })
 
     cy.get('body', { timeout: 10000 }).should('be.visible')
@@ -136,7 +134,6 @@ describe('Task List Application', () => {
       .find('[data-slot="checkbox"]')
       .click({ force: true })
 
-    cy.wait(2000)
     cy.get('.task-text')
       .contains('Toggle test task')
       .should('have.class', 'completed-task')
@@ -147,7 +144,6 @@ describe('Task List Application', () => {
       .find('[data-slot="checkbox"]')
       .click({ force: true })
 
-    cy.wait(2000)
     cy.get('.task-text')
       .contains('Toggle test task')
       .should('not.have.class', 'completed-task')

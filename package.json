@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "engines": {
-    "node": "^24.0.0"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "mock:api": "json-server --watch db.json --port 3000",
+    "mock:api": "node scripts/reset-db.mjs && json-server --watch db.json --port 3000",
     "db:reset": "node scripts/reset-db.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
