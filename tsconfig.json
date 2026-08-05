@@ -1,7 +1,5 @@
 {
-  "compilerOptions": {
-    "types": ["@testing-library/jest-dom"]
-  },
+  "compilerOptions": {},
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
