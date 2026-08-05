@@ -11,12 +11,15 @@ import { ANIMATION, LOADING_MESSAGES } from '@/constants'
 const delay = (ms: number) =>
   new Promise<void>((resolve) => window.setTimeout(resolve, ms))
 
+function getErrorMessage(err: unknown, fallback: string): string {
+  return err instanceof TaskServiceError ? err.message : fallback
+}
+
 function App() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [openElementRef, setOpenElementRef] =
-    useState<React.RefObject<HTMLDivElement | null> | null>(null)
+  const [openSwipeTaskId, setOpenSwipeTaskId] = useState<string | null>(null)
   const [deletingTasks, setDeletingTasks] = useState<Set<string>>(new Set())
   const [movingTasks, setMovingTasks] = useState<Set<string>>(new Set())
 
@@ -32,11 +35,7 @@ function App() {
       setTasks(tasks)
     } catch (err) {
       console.error('Error fetching tasks:', err)
-      if (err instanceof TaskServiceError) {
-        setError(err.message)
-      } else {
-        setError('An unexpected error occurred. Please try again.')
-      }
+      setError(getErrorMessage(err, 'An unexpected error occurred. Please try again.'))
     } finally {
       setLoading(false)
     }
@@ -54,11 +53,7 @@ function App() {
       setTasks((prevTasks) => [addedTask, ...prevTasks])
     } catch (err) {
       console.error('Error adding task:', err)
-      if (err instanceof TaskServiceError) {
-        setError(err.message)
-      } else {
-        setError('Failed to add task. Please try again.')
-      }
+      setError(getErrorMessage(err, 'Failed to add task. Please try again.'))
     }
   }
 
@@ -67,16 +62,7 @@ function App() {
       setError(null)
 
       // Keep swipe actions mutually exclusive.
-      if (openElementRef && openElementRef.current) {
-        openElementRef.current.classList.remove('swiped')
-        const taskContent = openElementRef.current.querySelector(
-          '.task-content'
-        ) as HTMLElement
-        if (taskContent) {
-          taskContent.style.transform = 'translateX(0)'
-        }
-        setOpenElementRef(null)
-      }
+      setOpenSwipeTaskId(null)
 
       const currentTasks = [...tasks]
       const currentTask = currentTasks.find((t) => t.id === taskId)
@@ -143,11 +129,7 @@ function App() {
       }
     } catch (err) {
       console.error('Error updating task:', err)
-      if (err instanceof TaskServiceError) {
-        setError(err.message)
-      } else {
-        setError('Failed to update task. Please try again.')
-      }
+      setError(getErrorMessage(err, 'Failed to update task. Please try again.'))
       setMovingTasks((prev) => {
         const newSet = new Set(prev)
         newSet.delete(taskId)
@@ -160,16 +142,7 @@ function App() {
     try {
       setError(null)
 
-      if (openElementRef && openElementRef.current) {
-        openElementRef.current.classList.remove('swiped')
-        const taskContent = openElementRef.current.querySelector(
-          '.task-content'
-        ) as HTMLElement
-        if (taskContent) {
-          taskContent.style.transform = 'translateX(0)'
-        }
-        setOpenElementRef(null)
-      }
+      setOpenSwipeTaskId(null)
 
       setDeletingTasks((prev) => new Set(prev).add(taskId))
 
@@ -185,15 +158,10 @@ function App() {
           newSet.delete(taskId)
           return newSet
         })
-        setOpenElementRef(null)
       }
     } catch (err) {
       console.error('Error deleting task:', err)
-      if (err instanceof TaskServiceError) {
-        setError(err.message)
-      } else {
-        setError('Failed to delete task. Please try again.')
-      }
+      setError(getErrorMessage(err, 'Failed to delete task. Please try again.'))
       setDeletingTasks((prev) => {
         const newSet = new Set(prev)
         newSet.delete(taskId)
@@ -202,25 +170,12 @@ function App() {
     }
   }
 
-  const handleSwipeOpen = (
-    elementRef: React.RefObject<HTMLDivElement | null>
-  ) => {
-    if (
-      openElementRef &&
-      openElementRef.current &&
-      openElementRef !== elementRef
-    ) {
-      openElementRef.current.classList.remove('swiped')
-      const taskContent = openElementRef.current.querySelector(
-        '.task-content'
-      ) as HTMLElement
-      if (taskContent) {
-        taskContent.style.transform = 'translateX(0)'
-      }
-    }
-    if (elementRef.current) {
-      setOpenElementRef(elementRef)
-    }
+  const handleSwipeOpen = (taskId: string) => {
+    setOpenSwipeTaskId(taskId)
+  }
+
+  const handleSwipeClose = () => {
+    setOpenSwipeTaskId(null)
   }
 
   const reorderTasks = (tasks: Task[]) => {
@@ -267,6 +222,8 @@ function App() {
                       onToggle={handleToggleTask}
                       onDelete={handleDeleteTask}
                       onSwipeOpen={handleSwipeOpen}
+                      onSwipeClose={handleSwipeClose}
+                      isSwipeOpen={openSwipeTaskId === task.id}
                       isDeleting={deletingTasks.has(task.id)}
                       isMoving={movingTasks.has(task.id)}
                     />

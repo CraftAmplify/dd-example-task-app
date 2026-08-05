@@ -29,8 +29,5 @@ export const ERROR_MESSAGES = {
 } as const
 
 export const LOADING_MESSAGES = {
-  LOADING_TASKS: 'Loading tasks...',
-  ADDING_TASK: 'Adding task...',
-  UPDATING_TASK: 'Updating task...',
-  DELETING_TASK: 'Deleting task...'
+  LOADING_TASKS: 'Loading tasks...'
 } as const

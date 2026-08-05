@@ -3,7 +3,8 @@
   "compilerOptions": {
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["@testing-library/jest-dom", "jest", "node"]
   },
   "include": [
     "src",

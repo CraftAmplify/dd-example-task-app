@@ -7,7 +7,9 @@ interface TaskItemProps {
   task: Task
   onToggle: (id: string, nextCompleted: boolean) => void
   onDelete: (id: string) => void
-  onSwipeOpen: (elementRef: React.RefObject<HTMLDivElement | null>) => void
+  onSwipeOpen: (taskId: string) => void
+  onSwipeClose: () => void
+  isSwipeOpen: boolean
   isDeleting: boolean
   isMoving: boolean
 }
@@ -17,12 +19,17 @@ export function TaskItem({
   onToggle,
   onDelete,
   onSwipeOpen,
+  onSwipeClose,
+  isSwipeOpen,
   isDeleting,
   isMoving
 }: TaskItemProps) {
   const swipeHandlers = useSwipeToDelete({
-    onDelete: () => onDelete(task.id),
-    onSwipeOpen: onSwipeOpen
+    taskId: task.id,
+    isSwipeOpen,
+    onSwipeOpen,
+    onSwipeClose,
+    onDelete: () => onDelete(task.id)
   })
 
   const handleHoverDeleteClick = (e: React.MouseEvent) => {
@@ -33,13 +40,18 @@ export function TaskItem({
   return (
     <div
       ref={swipeHandlers.elementRef}
-      className={`task-item ${isDeleting ? 'deleting' : ''} ${isMoving ? 'moving' : ''}`}
+      className={`task-item ${isSwipeOpen ? 'swiped' : ''} ${isDeleting ? 'deleting' : ''} ${isMoving ? 'moving' : ''}`}
       onTouchStart={swipeHandlers.handleTouchStart}
       onTouchMove={swipeHandlers.handleTouchMove}
       onTouchEnd={swipeHandlers.handleTouchEnd}
     >
       <div
         className="task-content flex items-start gap-2 p-2 rounded cursor-pointer"
+        style={
+          swipeHandlers.swipeOffset
+            ? { transform: `translateX(-${swipeHandlers.swipeOffset}px)` }
+            : undefined
+        }
         onClick={swipeHandlers.handleTaskClick}
       >
         <Checkbox
