@@ -129,7 +129,7 @@ Open your browser and navigate to:
 ## Project Structure
 
 ```
-craftamplify-task-app/
+dd-example-task-app/
 ├── src/
 │   ├── components/
 │   │   ├── AddTaskForm.tsx      # Task input form component
